@@ -2,13 +2,7 @@
 
 ## Simple application developed for Rocketseat's Ignite Node.js Trail - Chapter I Challenge 2.
 
-# Features implemented:
-
-- Create a user with `name`and `username`;
-- Create new _todo_;
-- Modify the `title`and `deadline` of an already existing _todo_;
-- Set a _todo_ as _done_;
-- Delete a _todo_
+Challenge used as bsae the solution of the previous Challenge 1.
 
 # During the development of this application for this challenge, I practiced the following topics of Node.js:
 
@@ -18,21 +12,19 @@
 - Request testing with Insomnia;
 - Troubleshooting based in Jest test results
 
-# Routes created:
-- post `/users`  
-  the route shall receive a `name`and a `username` as body parameters. It returns the object of the created user and the status 201.
+# Middleware created:
+- *checksExistsUserAccount*   
+  receives the `username` via request header and checks if a user with the given username exists. In positive case, the `user` is passed to the `request` and the next function is called. Else, the error code `404` is given.  
 
-- GET `/todos`  
-  the route shall receive, via request header, a `username`. It returns the todo list of the user and status 200.
+- *checksCreateTodosUserAvailability*  
+  receives the `user` in the `request` and checks if the `user` is a "free" user (`user.pro == false`) and if the number of todos equal or more than 10. In positive case, the error code `403` is given. Else, the next function is called.
 
-- POST `/todos`  
-  the route shall receive a `title`and a `deadline` as body parameters and a `username` via request header. A new task is created in the user's todo list and the new task is returned with status 201.
+- *checksTodoExists*  
+  receives the `username` via request header and the a todo `id` via `request.params`. Then, this middleware function checks:  
+  1) if a `user` with the given `username` exists;  
+  2) if the given `id` is a uuid;  
+  3) if a todo with the given `id` exists for the user;  
+  If all checks are ok, the `todo` is passed to the `request` and the next function is called. Else, an error code is given (400 if `id`is not a uuid, 404 is `user`/`id` is not found).
 
-- PUT `/todos/:id`  
-  the route shall receive a `title`and a `deadline` as body parameters, a `username`via request header and the task id `id` as route parameter. The task with id equal to `id` in the user todo list will have the `title`and `deadline` edited. The edited task is returned with status 201.
-
-- PÀTCH `/todos/:id/done`  
-  the route shall receive a `id` via route params and `username` via request header. The property `done` of the task is set to `done`. The task is then returned with status 201.
-
-- DELETE `/todos/:id`  
-  the route shall receive a `id`via route params and `username` via request header. The task is deleted from the user's todo list. The status 204 is returned.
+- *findUserById*  
+  receives a user `id` via `request.params` and checks if a user with the given `id` exists. In positive case, the user is passed to the `request` and the next function is called. Else, the error code 404 is given.
